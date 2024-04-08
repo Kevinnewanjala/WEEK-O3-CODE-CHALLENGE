@@ -1,13 +1,13 @@
 document.addEventListener("DOMContentLoaded", function () {
     // URL of the JSON data
-    const url = "db.json";
+    const url = "http://localhost:3000/films";
 
-    // Fetching data from the server(GET request)
+    // Fetching data from the server (GET request)
     fetch(url)
       .then((response) => response.json())
       .then((data) => {
         // Extracting the films array from the data
-        const films = data.films;
+        const films = data;
         // Displaying the details of the first film
         displayFilmDetails(films[0]);
         // Displaying the film menu on the left side of the page
@@ -88,17 +88,58 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Function to simulate updating tickets_sold on the server (PATCH Request)
+    // Function to update tickets_sold on the server (PATCH Request)
     function updateTicketSoldOnServer(filmId, ticketsSold) {
-        console.log("Updating tickets_sold for film ID:", filmId, "to", ticketsSold);
+        // Sending PATCH request to update tickets_sold
+        fetch(`${url}/${filmId}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                tickets_sold: ticketsSold
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to update tickets_sold on the server');
+            }
+            console.log(`Successfully updated tickets_sold for film ID: ${filmId} to ${ticketsSold}`);
+        })
+        .catch(error => console.error('Error updating tickets_sold on the server:', error));
     }
 
     // Function to simulate purchasing a ticket (POST request)
     function purchaseTicket(filmId) {
+        // Sending POST request to simulate ticket purchase
+        fetch(`${url}/${filmId}/purchase`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to purchase ticket');
+            }
+            console.log('Ticket purchased successfully');
+        })
+        .catch(error => console.error('Error purchasing ticket:', error));
     }
 
     // Function to delete a film from the server (DELETE request)
     function deleteFilm(filmId) {
+        // Sending DELETE request to delete the film
+        fetch(`${url}/${filmId}`, {
+            method: 'DELETE',
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to delete film');
+            }
+            console.log(`Film with ID ${filmId} deleted successfully`);
+        })
+        .catch(error => console.error('Error deleting film:', error));
     }
 
 });
